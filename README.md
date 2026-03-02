@@ -1,2 +1,2 @@
-# hundir_la_flota
+# Hundir la flota
 Juego classico de hundir la flota
