@@ -10,7 +10,7 @@ class Board:
         self.crosshair = Crosshair()
         cell: BoardCell = self.get_cell(self.crosshair)
         cell.states.append(CellState.POINTED)
-        cell.update_cell()
+        cell.update_cell_value()
     
     def get_cell(self, coordinate: Coordinate) -> BoardCell:
         return self.cells[coordinate.x * self.size + coordinate.y]
@@ -20,8 +20,8 @@ class Board:
     
     def set_pointed_cell(self, cell: BoardCell):
         cell.states.append(CellState.POINTED)
-        cell.update_cell()
+        cell.update_cell_value()
 
-    def update_all_cells(self):
+    def update_all_cells_value(self):
         for cell in self.cells:
-            cell.update_cell()
+            cell.update_cell_value()

@@ -19,7 +19,7 @@ class InGameInputHandler(InputHandler):
         self.board.get_pointed_cell().states.remove(CellState.POINTED)
         super().handle_input(input_key)
         self.board.set_pointed_cell(self.board.get_cell(self.board.crosshair))
-        self.board.update_all_cells()
+        self.board.update_all_cells_value()
 
     def handle_key_up(self):
         self.board.crosshair.move(Direction.UP)

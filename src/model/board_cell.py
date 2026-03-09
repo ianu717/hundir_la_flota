@@ -8,7 +8,7 @@ class BoardCell:
         self.cell_type = BoardCellType.WATER
         self.cell_value = f" {BoardCellType.UNEXPLORED.value} "
     
-    def update_cell(self):
+    def update_cell_value(self):
         if CellState.HIDDEN in self.states:
             if CellState.POINTED in self.states:
                 self.cell_value = f"[{BoardCellType.UNEXPLORED.value}]"
