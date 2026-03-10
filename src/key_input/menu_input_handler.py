@@ -1,4 +1,3 @@
-from model import BattlleShipGame
 from .input_handler import InputHandler
 
 class MenuInputHandler(InputHandler):
@@ -9,9 +8,9 @@ class MenuInputHandler(InputHandler):
             cls._instance = object.__new__(cls)
         return cls._instance
     
-    def __init__(self):
+    def __init__(self, battle_ship_game):
         if not hasattr(self, 'battle_ship_game'):
-            super().__init__(BattlleShipGame())
+            super().__init__(battle_ship_game)
 
     def handle_key_up(self):
         pass

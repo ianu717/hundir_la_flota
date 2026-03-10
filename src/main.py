@@ -1,25 +1,24 @@
 import time
-from model import BattlleShipGame, Board
+from model import BattleShipGame
 from renderer import InGameRenderer, Renderer
-from key_input import InputHandler, InGameInputHandler
+from key_input import InputHandler
 from constants import GameState
 
 def main():
+    Renderer().disable_cursor()
     try:
-        battle_ship_game = BattlleShipGame()
-        board = Board()
-        Renderer().disable_cursor()
-        in_game_renderer = InGameRenderer(board)
-        in_game_key_handler = InGameInputHandler(board)
-        in_game_key_handler.bind_keys()
+        battle_ship_game = BattleShipGame()
+        battle_ship_game.init_game_state(GameState.IN_GAME)
         while not battle_ship_game.game_state == GameState.EXIT:
-            in_game_renderer.render()
-            time.sleep(1/60)
+            InGameRenderer().render()
+            time.sleep(1/30)
+    except Exception as e:
+        print(f"An error occurred: {e}")
     finally:
-        InputHandler().unbind_keys()
+        # InputHandler().unbind_keys()
         Renderer().enable_cursor()
-        Renderer().clear_screen()
-
+        # Renderer().clear_screen()
+    Renderer().clear_screen()
 
 if __name__ == "__main__":
     main()

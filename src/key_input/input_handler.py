@@ -1,17 +1,16 @@
 import keyboard
 
 from constants import ActionKey, GameState
-from model import BattlleShipGame
 
 class InputHandler():
     _instance = None
     
-    def __new__(cls):
+    def __new__(cls, battle_ship_game=None):
         if cls._instance is None:
             cls._instance = object.__new__(cls)
         return cls._instance
     
-    def __init__(self):
+    def __init__(self, battle_ship_game=None):
         if not hasattr(self, 'handlers'):
             self.handlers = {
                 ActionKey.KEY_UP: self.handle_key_up,
@@ -43,7 +42,7 @@ class InputHandler():
         pass
 
     def handle_key_esc(self):
-        BattlleShipGame().game_state = GameState.EXIT
+        pass
 
     def bind_keys(self):
         for action_key in ActionKey:  

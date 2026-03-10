@@ -7,6 +7,7 @@ from .constants import (
     BoardCellType,
     CellState,
 )
+from .events import GameEvents
 
 __all__ = [
     'Color',
@@ -16,4 +17,5 @@ __all__ = [
     'GameState',
     'BoardCellType',
     'CellState',
+    'GameEvents',
 ]
