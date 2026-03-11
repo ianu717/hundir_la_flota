@@ -1,5 +1,6 @@
 import threading
 from pathlib import Path
+import sys
 
 from constants import GameEvents, ListenerNames, PlayerType
 
@@ -27,7 +28,7 @@ class AudioManager:
             return
 
         self.initialized = True
-        self.sounds_path = Path(__file__).resolve().parents[2] / "assets" / "sounds"
+        self.sounds_path = self._get_sounds_path()
         self.supported_extensions = (".wav", ".mp3", ".ogg")
         self.sound_map = {
             ListenerNames.ON_CROSSHAIR_MOVED.value: ("crosshair_move", (660, 35)),
@@ -40,6 +41,12 @@ class AudioManager:
         }
         self._subscribed = False
         self._pygame_ready = False
+
+    def _get_sounds_path(self) -> Path:
+        # PyInstaller extracts bundled files under sys._MEIPASS at runtime.
+        if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+            return Path(sys._MEIPASS) / "assets" / "sounds"
+        return Path(__file__).resolve().parents[2] / "assets" / "sounds"
 
     def subscribe_events(self):
         if self._subscribed:
