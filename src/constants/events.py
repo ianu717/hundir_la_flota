@@ -4,10 +4,12 @@ class GameEvents:
 
     _listeners = {
         ListenerNames.ON_EXIT.value: [],
+        ListenerNames.ON_GAME_STARTED.value: [],
         ListenerNames.ON_KEY_UP.value: [],
         ListenerNames.ON_KEY_DOWN.value: [],
         ListenerNames.ON_KEY_LEFT.value: [],
         ListenerNames.ON_KEY_RIGHT.value: [],
+        ListenerNames.ON_CROSSHAIR_MOVED.value: [],
         ListenerNames.ON_SHOOT.value: [],
         ListenerNames.ON_SHIP_HIT.value: [],
         ListenerNames.ON_SHIP_SUNK.value: [],

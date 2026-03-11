@@ -1,5 +1,6 @@
 import random
 import threading
+from audio import AudioManager
 from constants import GameState, GameEvents
 from constants.constants import BoardCellType, CellState, ListenerNames, PlayerType
 from key_input import InGameInputHandler
@@ -27,6 +28,8 @@ class BattleShipGame:
             self.machine_player.is_machine = True
             self.turn = Turn(self.real_player, self.machine_player)
             self.machine_only_mode = False
+            self.audio_manager = AudioManager()
+            self.audio_manager.subscribe_events()
             GameEvents.subscribe(ListenerNames.ON_EXIT.value, self.on_exit_event)
             GameEvents.subscribe(ListenerNames.ON_SHOOT.value, self.on_shoot_event)
             GameEvents.subscribe(ListenerNames.ON_SHIP_SUNK.value, self.on_ship_sunk_event)
@@ -100,7 +103,7 @@ class BattleShipGame:
             self.wait_machine_turn()
 
     def wait_machine_turn(self):
-        threading.Timer(0.1, self.machine_take_turn).start()
+        threading.Timer(0.8, self.machine_take_turn).start()
     
     def machine_take_turn(self):
         if self.game_state == GameState.EXIT:
@@ -127,6 +130,7 @@ class BattleShipGame:
         InGameRenderer(view_board, shooting_board)
         InGameInputHandler(shooting_board).bind_keys() 
         self.game_state = GameState.IN_GAME
+        GameEvents.emit(ListenerNames.ON_GAME_STARTED.value)
         if self.machine_only_mode:
             self.turn.active_player = self.machine_player
             self.wait_machine_turn()

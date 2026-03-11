@@ -55,10 +55,12 @@ class CellState(Enum):
 
 class ListenerNames(Enum):
     ON_EXIT = "on_exit"
+    ON_GAME_STARTED = "on_game_started"
     ON_KEY_UP = "on_key_up"
     ON_KEY_DOWN = "on_key_down"
     ON_KEY_LEFT = "on_key_left"
     ON_KEY_RIGHT = "on_key_right"
+    ON_CROSSHAIR_MOVED = "on_crosshair_moved"
     ON_SHOOT = "on_shoot"
     ON_SHIP_HIT = "on_ship_hit"
     ON_SHIP_SUNK = "on_ship_sunk"

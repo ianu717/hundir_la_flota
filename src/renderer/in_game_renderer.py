@@ -34,7 +34,12 @@ class InGameRenderer(Renderer):
         in_game_screen += self.player_board_renderer.render()
         in_game_screen += "\n\n"
         in_game_screen += self.enemy_board_renderer.render()
+        in_game_screen += "\n\n"
+        in_game_screen += self.render_controls()
         print(in_game_screen)
+
+    def render_controls(self):
+        return "Controles | Mover: W/A/S/D | Disparar: ENTER | Salir: ESC"
 
 class BoardRenderer:
     
@@ -57,11 +62,12 @@ class BoardRenderer:
         self.event_log.append(msg)
     
     def render(self):
-        board_str = f"{self.title} | Barcos restantes: {self.board.count_remaining_ships()}\n------------------------\n"
-        board_str += self.render_board()
+        board_str = f"{self.title} | Barcos restantes: {self.board.count_remaining_ships()} | "
         board_str += self.event_label + " "
         for event in self.event_log:
             board_str += f"{event}"
+        board_str += "\n"
+        board_str += self.render_board()
 
         return board_str
     
@@ -77,7 +83,7 @@ class BoardRenderer:
 class PlayerBoardRenderer(BoardRenderer):
 
     def __init__(self, board: ViewBoard):
-        super().__init__(board, "Tu flota", "Ultima accion enemiga:")
+        super().__init__(board, "Tu flota", "Disparo enemigo:")
         GameEvents.subscribe(ListenerNames.ON_ENEMY_SHIP_HIT.value, self.on_ship_hit_display)
         GameEvents.subscribe(ListenerNames.ON_ENEMY_SHIP_SUNK.value, self.on_ship_sunk_display)
         GameEvents.subscribe(ListenerNames.ON_ENEMY_WATER_HIT.value, self.on_water_hit_display)
@@ -85,7 +91,7 @@ class PlayerBoardRenderer(BoardRenderer):
 class EnemyBoardRenderer(BoardRenderer):
     
     def __init__(self, board: ShootingBoard):
-        super().__init__(board, "Flota enemiga", "Ultima accion tuya:")
+        super().__init__(board, "Flota enemiga", "Tu disparo:")
         GameEvents.subscribe(ListenerNames.ON_SHIP_HIT.value, self.on_ship_hit_display)
         GameEvents.subscribe(ListenerNames.ON_SHIP_SUNK.value, self.on_ship_sunk_display)
         GameEvents.subscribe(ListenerNames.ON_WATER_HIT.value, self.on_water_hit_display)

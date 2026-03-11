@@ -18,10 +18,14 @@ class InGameInputHandler(InputHandler):
 
     def handle_input(self, input_key: ActionKey):
         if input_key in [ActionKey.KEY_UP, ActionKey.KEY_DOWN, ActionKey.KEY_LEFT, ActionKey.KEY_RIGHT, ActionKey.KEY_ESC]:
+            previous_coordinate = (self.board.crosshair.x, self.board.crosshair.y)
             self.board.get_pointed_cell().states.remove(CellState.POINTED)
             super().handle_input(input_key)
             self.board.set_pointed_cell(self.board.get_cell(self.board.crosshair))
             self.board.update_all_cells_value()
+            current_coordinate = (self.board.crosshair.x, self.board.crosshair.y)
+            if input_key != ActionKey.KEY_ESC and current_coordinate != previous_coordinate:
+                GameEvents.emit(ListenerNames.ON_CROSSHAIR_MOVED.value)
         elif input_key == ActionKey.KEY_SHOOT:
             super().handle_input(input_key)
 
