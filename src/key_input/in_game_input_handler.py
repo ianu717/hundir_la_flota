@@ -1,5 +1,5 @@
 from constants import ActionKey, CellState, Direction, GameEvents, BoardCellType
-from constants.constants import GameState, ListenerNames
+from constants.constants import GameState, ListenerNames, PlayerType
 from model import Board
 from model.coordinate import Coordinate
 from .input_handler import InputHandler
@@ -50,4 +50,4 @@ class InGameInputHandler(InputHandler):
             return
         
         pointed_cell = self.board.get_pointed_cell()
-        GameEvents.emit(ListenerNames.ON_SHOOT.value, pointed_cell, player_type='real')
+        GameEvents.emit(ListenerNames.ON_SHOOT.value, pointed_cell, player_type=PlayerType.REAL.value)

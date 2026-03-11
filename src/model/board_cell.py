@@ -12,16 +12,16 @@ class BoardCell:
         if CellState.MACHINE_SHOT in self.states:
             shot_symbol = f"{Color.YELLOW.value}X{Color.RESET.value}"
             if CellState.POINTED in self.states:
-                self.cell_value = f"[{shot_symbol}]"
+                self.cell_value = f"{BoardCellType.CROSSHAIR_LEFT.value}{shot_symbol}{BoardCellType.CROSSHAIR_RIGHT.value}"
             else:
                 self.cell_value = f" {shot_symbol} "
         elif CellState.HIDDEN in self.states:
             if CellState.POINTED in self.states:
-                self.cell_value = f"[{BoardCellType.UNEXPLORED.value}]"
+                self.cell_value = f"{BoardCellType.CROSSHAIR_LEFT.value}{BoardCellType.UNEXPLORED.value}{BoardCellType.CROSSHAIR_RIGHT.value}"
             else:
                 self.cell_value = f" {BoardCellType.UNEXPLORED.value} "
         elif CellState.REVEALED in self.states:
             if CellState.POINTED in self.states:
-                self.cell_value = f"[{self.cell_type.value}]"
+                self.cell_value = f"{BoardCellType.CROSSHAIR_LEFT.value}{self.cell_type.value}{BoardCellType.CROSSHAIR_RIGHT.value}"
             else:
                 self.cell_value = f" {self.cell_type.value} "

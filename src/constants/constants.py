@@ -32,12 +32,19 @@ class Direction(Enum):
 class GameState(Enum):
     MENU = "menu"
     IN_GAME = "in_game"
+    END_GAME = "end_game"
     EXIT = "exit"
+
+class PlayerType(Enum):
+    REAL = "real"
+    MACHINE = "machine"
 
 class BoardCellType(Enum):
     WATER = f"{Color.BLUE.value}~{Color.RESET.value}"
-    SHIP = f"{Color.RED.value}■{Color.RESET.value}"
+    SHIP = f"{Color.CYAN.value}⏅{Color.RESET.value}"
     UNEXPLORED = f"{Color.GREEN.value}·{Color.RESET.value}"
+    CROSSHAIR_LEFT = f"{Color.YELLOW.value}[{Color.RESET.value}"
+    CROSSHAIR_RIGHT = f"{Color.YELLOW.value}]{Color.RESET.value}"
 
 class CellState(Enum):
     POINTED = "pointed"
@@ -60,4 +67,5 @@ class ListenerNames(Enum):
     ON_ENEMY_SHIP_HIT = "on_enemy_ship_hit"
     ON_ENEMY_SHIP_SUNK = "on_enemy_ship_sunk"
     ON_ENEMY_WATER_HIT = "on_enemy_water_hit"
+    ON_ALL_ENEMY_SHIPS_SUNK = "on_all_enemy_ships_sunk"
     ON_MACHINE_TURN = "on_machine_turn"

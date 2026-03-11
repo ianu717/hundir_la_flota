@@ -1,5 +1,4 @@
-from constants import GameEvents
-from constants.constants import ListenerNames
+from constants import GameEvents, Direction, ListenerNames, PlayerType
 from model import Board, ShootingBoard, ViewBoard
 from model import Coordinate
 from model.ship import Ship
@@ -43,12 +42,8 @@ class BoardRenderer:
         msg = f"Barco tocado en {coordinate.get_alpha_x()}{coordinate.y}"
         self.event_log.append(msg)
     
-    def on_ship_sunk_display(self, board: Board, target_ship: Ship):
+    def on_ship_sunk_display(self, board: Board, target_ship: Ship, player_type=PlayerType.REAL.value):
         msg = f"¡Hundido! {target_ship.name} ha sido completamente destruido"
-        self.event_log.append(msg)
-    
-    def on_all_ships_sunk_display(self):
-        msg = "¡VICTORIA! Todos los barcos enemigos han sido hundidos"
         self.event_log.append(msg)
     
     def on_water_hit_display(self, coordinate):
@@ -66,7 +61,7 @@ class BoardRenderer:
         board_str += self.event_label + " "
         for event in self.event_log:
             board_str += f"{event}"
-        
+
         return board_str
 
 class PlayerBoardRenderer(BoardRenderer):
@@ -76,7 +71,6 @@ class PlayerBoardRenderer(BoardRenderer):
         GameEvents.subscribe(ListenerNames.ON_ENEMY_SHIP_HIT.value, self.on_ship_hit_display)
         GameEvents.subscribe(ListenerNames.ON_ENEMY_SHIP_SUNK.value, self.on_ship_sunk_display)
         GameEvents.subscribe(ListenerNames.ON_ENEMY_WATER_HIT.value, self.on_water_hit_display)
-        GameEvents.subscribe(ListenerNames.ON_ALL_SHIPS_SUNK.value, self.on_all_ships_sunk_display)
 
 class EnemyBoardRenderer(BoardRenderer):
     
@@ -85,4 +79,3 @@ class EnemyBoardRenderer(BoardRenderer):
         GameEvents.subscribe(ListenerNames.ON_SHIP_HIT.value, self.on_ship_hit_display)
         GameEvents.subscribe(ListenerNames.ON_SHIP_SUNK.value, self.on_ship_sunk_display)
         GameEvents.subscribe(ListenerNames.ON_WATER_HIT.value, self.on_water_hit_display)
-        GameEvents.subscribe(ListenerNames.ON_ALL_SHIPS_SUNK.value, self.on_all_ships_sunk_display)

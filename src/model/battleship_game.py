@@ -1,7 +1,7 @@
 import random
 import threading
 from constants import GameState, GameEvents
-from constants.constants import BoardCellType, CellState, ListenerNames
+from constants.constants import BoardCellType, CellState, ListenerNames, PlayerType
 from key_input import InGameInputHandler
 from model.board_cell import BoardCell
 from model.coordinate import Coordinate
@@ -26,25 +26,27 @@ class BattleShipGame:
             self.machine_player = Player()
             self.machine_player.is_machine = True
             self.turn = Turn(self.real_player, self.machine_player)
+            self.machine_only_mode = False
             GameEvents.subscribe(ListenerNames.ON_EXIT.value, self.on_exit_event)
             GameEvents.subscribe(ListenerNames.ON_SHOOT.value, self.on_shoot_event)
             GameEvents.subscribe(ListenerNames.ON_SHIP_HIT.value, self.on_ship_hit_event)
             GameEvents.subscribe(ListenerNames.ON_SHIP_SUNK.value, self.on_ship_sunk_event)
+            GameEvents.subscribe(ListenerNames.ON_ENEMY_SHIP_SUNK.value, self.on_ship_sunk_event)
             GameEvents.subscribe(ListenerNames.ON_ALL_SHIPS_SUNK.value, self.on_all_ships_sunk_event)
             GameEvents.subscribe(ListenerNames.ON_WATER_HIT.value, self.on_water_hit_event)
     
     def on_exit_event(self):
         self.game_state = GameState.EXIT
     
-    def on_shoot_event(self, target_cell: BoardCell, player_type='real'):
+    def on_shoot_event(self, target_cell: BoardCell, player_type=PlayerType.REAL.value):
         from renderer import InGameRenderer
         from constants import BoardCellType
         renderer = InGameRenderer()
-        target_board = renderer.shooting_board if player_type == 'real' else renderer.view_board
+        target_board = renderer.shooting_board if player_type == PlayerType.REAL.value else renderer.view_board
         if CellState.SHOT in target_cell.states:
             return
         
-        if player_type == "real":
+        if player_type == PlayerType.REAL.value:
             target_cell.states.remove(CellState.HIDDEN)
             target_cell.states.append(CellState.REVEALED)
             target_cell.states.append(CellState.SHOT)
@@ -64,39 +66,45 @@ class BattleShipGame:
             if target_ship:
                 target_ship.hits += 1
                 if target_ship.is_sunk():
-                    if player_type == 'machine':
-                        GameEvents.emit(ListenerNames.ON_ENEMY_SHIP_SUNK.value, target_board, target_ship)
+                    if player_type == PlayerType.MACHINE.value:
+                        GameEvents.emit(ListenerNames.ON_ENEMY_SHIP_SUNK.value, target_board, target_ship, player_type)
                         if self.game_state != GameState.EXIT:
                             self.wait_machine_turn()
                     else:
-                        GameEvents.emit(ListenerNames.ON_SHIP_SUNK.value, target_board, target_ship)
+                        GameEvents.emit(ListenerNames.ON_SHIP_SUNK.value, target_board, target_ship, player_type)
                 else:
-                    if player_type == 'machine':
+                    if player_type == PlayerType.MACHINE.value:
                         GameEvents.emit(ListenerNames.ON_ENEMY_SHIP_HIT.value, coordinate)
                         if self.game_state != GameState.EXIT:
                             self.wait_machine_turn()
                     else:
                         GameEvents.emit(ListenerNames.ON_SHIP_HIT.value, coordinate)
         else:
-            if player_type == 'machine':
+            if player_type == PlayerType.MACHINE.value:
                 GameEvents.emit(ListenerNames.ON_ENEMY_WATER_HIT.value, coordinate)
-            GameEvents.emit(ListenerNames.ON_WATER_HIT.value, coordinate)
+                self.turn.switch_turn()
+            else:
+                GameEvents.emit(ListenerNames.ON_WATER_HIT.value, coordinate)
     
     def on_ship_hit_event(self, ship_name):
         pass
     
-    def on_ship_sunk_event(self, board: Board, target_ship: Ship):
+    def on_ship_sunk_event(self, board: Board, target_ship: Ship, player_type=PlayerType.REAL.value):
         remaining_ships = board.count_remaining_ships()
         if remaining_ships == 0:
-            GameEvents.emit(ListenerNames.ON_ALL_SHIPS_SUNK.value)
+            GameEvents.emit(ListenerNames.ON_ALL_SHIPS_SUNK.value, player_type)
     
     def on_water_hit_event(self, coordinate):
+        if self.machine_only_mode:
+            if self.game_state != GameState.EXIT:
+                self.wait_machine_turn()
+            return
         self.turn.switch_turn()
         if self.turn.active_player.is_machine:
             self.wait_machine_turn()
 
     def wait_machine_turn(self):
-        threading.Timer(1.0, self.machine_take_turn).start()
+        threading.Timer(0.1, self.machine_take_turn).start()
     
     def machine_take_turn(self):
         if self.game_state == GameState.EXIT:
@@ -110,19 +118,23 @@ class BattleShipGame:
             cell = target_board.get_cell(coordinate)
             if CellState.SHOT in cell.states:
                 continue
-            GameEvents.emit(ListenerNames.ON_SHOOT.value, cell, player_type='machine')
+            GameEvents.emit(ListenerNames.ON_SHOOT.value, cell, player_type=PlayerType.MACHINE.value)
             break
             
-    def on_all_ships_sunk_event(self):
-        self.game_state = GameState.EXIT
+    def on_all_ships_sunk_event(self, player_type):
+        self.winner = player_type
+        self.game_state = GameState.END_GAME
     
-    def init_game_state(self, new_state):
+    def init_game(self):
         view_board = ViewBoard()
         shooting_board = ShootingBoard()
         InGameRenderer(view_board, shooting_board)
         in_game_key_handler = InGameInputHandler(shooting_board)
         in_game_key_handler.bind_keys() 
-        self.game_state = new_state
+        self.game_state = GameState.IN_GAME
+        if self.machine_only_mode:
+            self.turn.active_player = self.machine_player
+            self.wait_machine_turn()
 
     def reset_game(self):
         self.game_state = GameState.IN_GAME

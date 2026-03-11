@@ -4,8 +4,10 @@ from .constants import (
     ActionKey,
     Direction,
     GameState,
+    PlayerType,
     BoardCellType,
     CellState,
+    ListenerNames,
 )
 from .events import GameEvents
 
@@ -15,7 +17,9 @@ __all__ = [
     'ActionKey',
     'Direction',
     'GameState',
+    'PlayerType',
     'BoardCellType',
     'CellState',
     'GameEvents',
+    'ListenerNames',
 ]

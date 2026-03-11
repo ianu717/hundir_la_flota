@@ -1,24 +1,41 @@
 import time
+from constants.constants import Direction
 from model import BattleShipGame
-from renderer import InGameRenderer, Renderer
+from renderer import InGameRenderer, Renderer, EndGameRenderer, MenuRenderer
 from key_input import InputHandler
-from constants import GameState
+from constants import GameState, ActionKey
+import keyboard
 
 def main():
     Renderer().disable_cursor()
     try:
         battle_ship_game = BattleShipGame()
-        battle_ship_game.init_game_state(GameState.IN_GAME)
         while not battle_ship_game.game_state == GameState.EXIT:
-            InGameRenderer().render()
+            if battle_ship_game.game_state == GameState.IN_GAME:
+                InGameRenderer().render()
+                # print(f"\nControles - wasd: Mover la mira | ↳: Disparar | Esc: Salir")
+            elif battle_ship_game.game_state == GameState.END_GAME:
+                EndGameRenderer().render(battle_ship_game.winner)
+                while True:
+                    if keyboard.is_pressed("m"):
+                        battle_ship_game.game_state = GameState.MENU
+                        break
+                    elif keyboard.is_pressed("q"):
+                        battle_ship_game.game_state = GameState.EXIT
+                        break
+            elif battle_ship_game.game_state == GameState.MENU:
+                MenuRenderer().render()
+                while True:
+                    if keyboard.is_pressed("p"):
+                        battle_ship_game.init_game()
+                        break
+                    elif keyboard.is_pressed("q"):
+                        battle_ship_game.game_state = GameState.EXIT    
+                        break
             time.sleep(1/30)
-    except Exception as e:
-        print(f"An error occurred: {e}")
     finally:
-        # InputHandler().unbind_keys()
         Renderer().enable_cursor()
-        # Renderer().clear_screen()
-    Renderer().clear_screen()
+        Renderer().clear_screen()
 
 if __name__ == "__main__":
     main()
