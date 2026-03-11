@@ -1,9 +1,7 @@
-from constants import ActionKey, CellState, Direction, GameEvents, BoardCellType
-from constants.constants import GameState, ListenerNames, PlayerType
+from constants import ActionKey, CellState, Direction, GameEvents
+from constants.constants import ListenerNames, PlayerType
 from model import Board
-from model.coordinate import Coordinate
 from .input_handler import InputHandler
-import time
 
 class InGameInputHandler(InputHandler):
     _instance = None
@@ -45,8 +43,7 @@ class InGameInputHandler(InputHandler):
     def handle_key_shoot(self):
         from model import BattleShipGame
 
-        battle_ship_game = BattleShipGame()
-        if battle_ship_game.turn.active_player.is_machine:
+        if BattleShipGame().turn.active_player.is_machine:
             return
         
         pointed_cell = self.board.get_pointed_cell()

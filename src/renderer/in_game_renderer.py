@@ -1,4 +1,4 @@
-from constants import GameEvents, Direction, ListenerNames, PlayerType
+from constants import GameEvents, ListenerNames, PlayerType
 from model import Board, ShootingBoard, ViewBoard
 from model import Coordinate
 from model.ship import Ship
@@ -21,6 +21,12 @@ class InGameRenderer(Renderer):
         if not hasattr(self, 'player_board_renderer'):
             self.player_board_renderer = PlayerBoardRenderer(self.view_board)
             self.enemy_board_renderer = EnemyBoardRenderer(self.shooting_board)
+
+    def set_boards(self, view_board: ViewBoard, shooting_board: ShootingBoard):
+        self.view_board = view_board
+        self.shooting_board = shooting_board
+        self.player_board_renderer.board = PlayerBoardRenderer(self.view_board)
+        self.enemy_board_renderer.board = EnemyBoardRenderer(self.shooting_board)
 
     def render(self):
         self.clear_screen()
@@ -51,17 +57,21 @@ class BoardRenderer:
         self.event_log.append(msg)
     
     def render(self):
-        board_str = f"{self.title}\n------------------------\n"
+        board_str = f"{self.title} | Barcos restantes: {self.board.count_remaining_ships()}\n------------------------\n"
+        board_str += self.render_board()
+        board_str += self.event_label + " "
+        for event in self.event_log:
+            board_str += f"{event}"
+
+        return board_str
+    
+    def render_board(self):
+        board_str = ""
         for row in range(self.board.size):
             for col in range(self.board.size):
                 cell = self.board.get_cell(Coordinate(row, col))
                 board_str += cell.cell_value
             board_str += "\n"
-        
-        board_str += self.event_label + " "
-        for event in self.event_log:
-            board_str += f"{event}"
-
         return board_str
 
 class PlayerBoardRenderer(BoardRenderer):

@@ -31,4 +31,6 @@ class MenuRenderer(Renderer):
 -'   `-'   `-'   `-'   `-'   `-'   `-'   `-'   `-'   `-'   `-'   `
 
         """)
-        print("p:Nuevo juego       q:Salir")
+        print("Selecciona una opcion:")
+        print()
+        print("p -> Nuevo juego\nq -> Salir")

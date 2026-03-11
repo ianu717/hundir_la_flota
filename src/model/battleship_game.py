@@ -29,18 +29,16 @@ class BattleShipGame:
             self.machine_only_mode = False
             GameEvents.subscribe(ListenerNames.ON_EXIT.value, self.on_exit_event)
             GameEvents.subscribe(ListenerNames.ON_SHOOT.value, self.on_shoot_event)
-            GameEvents.subscribe(ListenerNames.ON_SHIP_HIT.value, self.on_ship_hit_event)
             GameEvents.subscribe(ListenerNames.ON_SHIP_SUNK.value, self.on_ship_sunk_event)
             GameEvents.subscribe(ListenerNames.ON_ENEMY_SHIP_SUNK.value, self.on_ship_sunk_event)
             GameEvents.subscribe(ListenerNames.ON_ALL_SHIPS_SUNK.value, self.on_all_ships_sunk_event)
             GameEvents.subscribe(ListenerNames.ON_WATER_HIT.value, self.on_water_hit_event)
+            GameEvents.subscribe(ListenerNames.ON_ENEMY_WATER_HIT.value, self.on_water_hit_event)
     
     def on_exit_event(self):
         self.game_state = GameState.EXIT
     
     def on_shoot_event(self, target_cell: BoardCell, player_type=PlayerType.REAL.value):
-        from renderer import InGameRenderer
-        from constants import BoardCellType
         renderer = InGameRenderer()
         target_board = renderer.shooting_board if player_type == PlayerType.REAL.value else renderer.view_board
         if CellState.SHOT in target_cell.states:
@@ -82,13 +80,11 @@ class BattleShipGame:
         else:
             if player_type == PlayerType.MACHINE.value:
                 GameEvents.emit(ListenerNames.ON_ENEMY_WATER_HIT.value, coordinate)
-                self.turn.switch_turn()
             else:
                 GameEvents.emit(ListenerNames.ON_WATER_HIT.value, coordinate)
     
-    def on_ship_hit_event(self, ship_name):
-        pass
-    
+
+
     def on_ship_sunk_event(self, board: Board, target_ship: Ship, player_type=PlayerType.REAL.value):
         remaining_ships = board.count_remaining_ships()
         if remaining_ships == 0:
@@ -129,13 +125,9 @@ class BattleShipGame:
         view_board = ViewBoard()
         shooting_board = ShootingBoard()
         InGameRenderer(view_board, shooting_board)
-        in_game_key_handler = InGameInputHandler(shooting_board)
-        in_game_key_handler.bind_keys() 
+        InGameInputHandler(shooting_board).bind_keys() 
         self.game_state = GameState.IN_GAME
         if self.machine_only_mode:
             self.turn.active_player = self.machine_player
             self.wait_machine_turn()
-
-    def reset_game(self):
-        self.game_state = GameState.IN_GAME
-        self.turn = Turn(self.real_player, self.machine_player)
+        

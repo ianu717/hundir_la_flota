@@ -51,7 +51,6 @@ class InputHandler():
                 lambda action=action_key: self.handle_input(action),
                 suppress=True
             )
-    
     def unbind_keys(self):
-        for action_key in ActionKey:
+        for action_key in ActionKey:  
             keyboard.remove_hotkey(action_key.value)

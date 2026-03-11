@@ -15,9 +15,7 @@ class GameEvents:
         ListenerNames.ON_ALL_SHIPS_SUNK.value: [],
         ListenerNames.ON_ENEMY_SHIP_HIT.value: [],
         ListenerNames.ON_ENEMY_SHIP_SUNK.value: [],
-        ListenerNames.ON_ENEMY_WATER_HIT.value: [],
-        ListenerNames.ON_ALL_ENEMY_SHIPS_SUNK.value: [],
-        ListenerNames.ON_MACHINE_TURN.value: []
+        ListenerNames.ON_ENEMY_WATER_HIT.value: []
     }
     
     @classmethod

@@ -67,5 +67,3 @@ class ListenerNames(Enum):
     ON_ENEMY_SHIP_HIT = "on_enemy_ship_hit"
     ON_ENEMY_SHIP_SUNK = "on_enemy_ship_sunk"
     ON_ENEMY_WATER_HIT = "on_enemy_water_hit"
-    ON_ALL_ENEMY_SHIPS_SUNK = "on_all_enemy_ships_sunk"
-    ON_MACHINE_TURN = "on_machine_turn"

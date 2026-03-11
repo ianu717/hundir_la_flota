@@ -1,9 +1,7 @@
 import time
-from constants.constants import Direction
 from model import BattleShipGame
 from renderer import InGameRenderer, Renderer, EndGameRenderer, MenuRenderer
-from key_input import InputHandler
-from constants import GameState, ActionKey
+from constants import GameState
 import keyboard
 
 def main():
@@ -13,14 +11,10 @@ def main():
         while not battle_ship_game.game_state == GameState.EXIT:
             if battle_ship_game.game_state == GameState.IN_GAME:
                 InGameRenderer().render()
-                # print(f"\nControles - wasd: Mover la mira | ↳: Disparar | Esc: Salir")
             elif battle_ship_game.game_state == GameState.END_GAME:
                 EndGameRenderer().render(battle_ship_game.winner)
                 while True:
-                    if keyboard.is_pressed("m"):
-                        battle_ship_game.game_state = GameState.MENU
-                        break
-                    elif keyboard.is_pressed("q"):
+                    if keyboard.is_pressed("q"):
                         battle_ship_game.game_state = GameState.EXIT
                         break
             elif battle_ship_game.game_state == GameState.MENU:
