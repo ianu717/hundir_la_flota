@@ -77,3 +77,37 @@ Hundir todos los barcos del rival antes de que el rival hunda los tuyos.
 
 ## Fin de la partida
 La partida termina cuando uno de los jugadores ha hundido todos los barcos del oponente.
+
+## Datos para practicar data science
+
+Al terminar cada partida el juego guarda automaticamente los datos en la carpeta `data/` del proyecto:
+
+| Archivo | Descripcion |
+|---|---|
+| `data/disparos.csv` | Un registro por disparo realizado durante la partida |
+| `data/partidas.csv` | Un resumen por partida (ganador, disparos totales, precision) |
+
+### Columnas de `disparos.csv`
+
+| Columna | Descripcion |
+|---|---|
+| `id_partida` | Identificador unico de la partida (8 caracteres) |
+| `turno` | Numero de turno global dentro de la partida |
+| `jugador` | Quien disparo: `jugador` o `maquina` |
+| `fila` | Fila del disparo (0–9) |
+| `columna` | Columna del disparo (0–9) |
+| `resultado` | `agua`, `tocado` o `hundido` |
+| `barco` | Nombre del barco impactado (vacio si fue agua) |
+
+### Columnas de `partidas.csv`
+
+| Columna | Descripcion |
+|---|---|
+| `id_partida` | Identificador unico de la partida |
+| `ganador` | `jugador` o `maquina` |
+| `disparos_jugador` | Total de disparos realizados por el jugador humano |
+| `disparos_maquina` | Total de disparos realizados por la maquina |
+| `precision_jugador` | Porcentaje de aciertos del jugador (impactos / disparos) |
+| `fecha` | Fecha y hora de fin de la partida |
+
+Juega varias partidas para acumular datos y luego analiza los archivos CSV con herramientas como `pandas`, `matplotlib` o cualquier hoja de calculo.

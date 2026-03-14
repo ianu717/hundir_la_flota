@@ -8,6 +8,7 @@ from model.board_cell import BoardCell
 from model.coordinate import Coordinate
 from model.ship import Ship
 from .board import Board, ShootingBoard, ViewBoard
+from .data_logger import DataLogger
 from .player import Player
 from .turn import Turn
 from renderer import InGameRenderer
@@ -28,6 +29,7 @@ class BattleShipGame:
             self.machine_player.is_machine = True
             self.turn = Turn(self.real_player, self.machine_player)
             self.machine_only_mode = False
+            self.data_logger = None
             self.audio_manager = AudioManager()
             self.audio_manager.subscribe_events()
             GameEvents.subscribe(ListenerNames.ON_EXIT.value, self.on_exit_event)
@@ -58,6 +60,7 @@ class BattleShipGame:
             target_cell.update_cell_value()
 
         coordinate = target_cell.coordinate
+        log_player = 'jugador' if player_type == PlayerType.REAL.value else 'maquina'
         if target_cell.cell_type == BoardCellType.SHIP:
             target_ship = None
             for ship in target_board.ships:
@@ -67,6 +70,8 @@ class BattleShipGame:
             if target_ship:
                 target_ship.hits += 1
                 if target_ship.is_sunk():
+                    if self.data_logger:
+                        self.data_logger.log_shot(log_player, coordinate.x, coordinate.y, 'hundido', target_ship.name)
                     if player_type == PlayerType.MACHINE.value:
                         GameEvents.emit(ListenerNames.ON_ENEMY_SHIP_SUNK.value, target_board, target_ship, player_type)
                         if self.game_state != GameState.EXIT:
@@ -74,6 +79,8 @@ class BattleShipGame:
                     else:
                         GameEvents.emit(ListenerNames.ON_SHIP_SUNK.value, target_board, target_ship, player_type)
                 else:
+                    if self.data_logger:
+                        self.data_logger.log_shot(log_player, coordinate.x, coordinate.y, 'tocado', target_ship.name)
                     if player_type == PlayerType.MACHINE.value:
                         GameEvents.emit(ListenerNames.ON_ENEMY_SHIP_HIT.value, coordinate)
                         if self.game_state != GameState.EXIT:
@@ -81,6 +88,8 @@ class BattleShipGame:
                     else:
                         GameEvents.emit(ListenerNames.ON_SHIP_HIT.value, coordinate)
         else:
+            if self.data_logger:
+                self.data_logger.log_shot(log_player, coordinate.x, coordinate.y, 'agua')
             if player_type == PlayerType.MACHINE.value:
                 GameEvents.emit(ListenerNames.ON_ENEMY_WATER_HIT.value, coordinate)
             else:
@@ -123,8 +132,12 @@ class BattleShipGame:
     def on_all_ships_sunk_event(self, player_type):
         self.winner = player_type
         self.game_state = GameState.END_GAME
+        if self.data_logger:
+            log_winner = 'jugador' if player_type == PlayerType.REAL.value else 'maquina'
+            self.data_logger.log_game_end(log_winner)
     
     def init_game(self):
+        self.data_logger = DataLogger()
         view_board = ViewBoard()
         shooting_board = ShootingBoard()
         InGameRenderer(view_board, shooting_board)
